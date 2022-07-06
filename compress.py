@@ -456,58 +456,6 @@ def decompress_file(in_file: str, out_file: str) -> None:
             g.write(decompress_bytes(tree, text, size))
 
 
-# ====================
-# Other functions
-
-
-def improve_tree(tree: HuffmanTree, freq_dict: dict[int, int]) -> None:
-    """ Improve the tree <tree> as much as possible, without changing its shape,
-    by swapping nodes. The improvements are with respect to the dictionary of
-    symbol frequencies <freq_dict>.
-
-    >>> left = HuffmanTree(None, HuffmanTree(99, None, None), \
-    HuffmanTree(100, None, None))
-    >>> right = HuffmanTree(None, HuffmanTree(101, None, None), \
-    HuffmanTree(None, HuffmanTree(97, None, None), HuffmanTree(98, None, None)))
-    >>> tree = HuffmanTree(None, left, right)
-    >>> freq = {97: 26, 98: 23, 99: 20, 100: 16, 101: 15}
-    >>> avg_length(tree, freq)
-    2.49
-    >>> improve_tree(tree, freq)
-    >>> avg_length(tree, freq)
-    2.31
-    """
-    sorted_keys = sorted(freq_dict, key=freq_dict.get)
-    depth_dict, swap, already_swap = find_depth(tree, {}, 0), {}, []
-    for i in range(len(sorted_keys)):
-        for j in range(len(sorted_keys) - 1, i - 1, -1):
-            if sorted_keys[j] not in already_swap and \
-                    depth_dict[sorted_keys[i]] < depth_dict[sorted_keys[j]]:
-                swap[sorted_keys[i]] = sorted_keys[j]
-                already_swap.append(sorted_keys[j])
-                break
-    helper_improve_tree(tree, swap)
-
-
-def helper_improve_tree(tree: HuffmanTree, swap: dict[int, int]) -> None:
-    """
-    Improve the tree <tree> as much as possible, without changing its shape,
-    by swapping nodes. The improvements are with respect to the dictionary of
-    symbol frequencies <freq_dict>.
-    """
-    if tree.is_leaf():
-        for u, v in swap.items():
-            if tree.symbol == u:
-                tree.symbol = v
-                break
-            elif tree.symbol == v:
-                tree.symbol = u
-                break
-    else:
-        helper_improve_tree(tree.left, swap)
-        helper_improve_tree(tree.right, swap)
-
-
 if __name__ == "__main__":
     import doctest
 
